@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "compile-java",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-sourcepath", "src", "src/display/windowMain.java",
+                "-d", "classes"
+            ],
+            "group": "build"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "java.mainClass": "display.windowMain",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.project.outputPath": "classes",
+    "java.project.sourcePaths": ["src"]
+}
