@@ -32,6 +32,16 @@ public class Player extends Point {
         return eyesight;
     }
 
+    /** Calculates coordinates of the direction ray
+     * (the ray pointing in the movements direction of the player)
+     * @return the direction of the player
+     */
+    public Line genDirectionLine() {
+        return new Line(this.x, this.y, 
+                    this.x + (int)(this.visionDistance*Math.cos(Conversion.toRad(this.direction))),
+                    this.y + (int)(this.visionDistance*Math.sin(Conversion.toRad(this.direction))));
+    }
+
     /** Takes a line, a list of rectangles and calculates the closest intersection point
      * @param line the main vision ray
      * @param ArrayList<MyRectangle> a list of rectangles on the map

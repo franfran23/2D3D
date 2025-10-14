@@ -5,7 +5,7 @@ package geometry;
  */
 public class Line {
 
-    private int sX, sY, eX, eY;
+    public int sX, sY, eX, eY;
     public Point start, end;
     
 

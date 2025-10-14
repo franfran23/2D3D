@@ -55,6 +55,8 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
         g2d.setColor(Color.RED);
         int playerMidSize = (int)this.player.size/2;
         g2d.fillOval(this.player.x-playerMidSize, this.player.y-playerMidSize, this.player.size, this.player.size);
+        Line directionLine = this.player.genDirectionLine();
+        g2d.drawLine(directionLine.sX, directionLine.sY, directionLine.eX, directionLine.eY);
 
         g2d.setColor(Color.BLUE);
         for (Line l: rays) {
@@ -71,9 +73,10 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             if (p != null) {
                 double dist = player.euclDist(p);
                 int x = i*(500/rays.size());
-                int height = (int)(player.visionDistance/Math.sqrt(dist))*750;
-                int y = (int) 250 + height/2;
-                g2d.setColor(Color.getHSBColor((float)240.0, (float)(player.visionDistance/Math.sqrt(dist)), (float)1.0));
+                int height = (int)(((player.visionDistance - dist)/player.visionDistance)*500);
+                System.out.println(String.valueOf((int)dist) + " " + String.valueOf(height));
+                int y = (int) 250 - height/2;
+                //g2d.setColor(Color.getHSBColor((float)240.0, (float)1.0, (float)(player.visionDistance/Math.sqrt(dist))));
                 g2d.fillRect(x, y, 500/rays.size(), height);
                 
             }
