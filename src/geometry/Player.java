@@ -28,7 +28,7 @@ public class Player extends Point {
      */
     public ArrayList<Line> genRays() {
         ArrayList<Line> eyesight = new ArrayList<>();
-        for (double i = -45; i<this.fov/2; i+=this.visionStep) {
+        for (double i = -fov/2; i<fov/2; i+=visionStep) {
             // la moitié des rayons à gauche l'autre moitié à droite
             eyesight.add(
                 new Line(

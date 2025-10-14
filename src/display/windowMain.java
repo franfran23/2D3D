@@ -161,7 +161,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             Line l = rays.get(i);
             Point p = player.closestIntersection(l, rects);
             if (p != null) {
-                double dist = player.euclDist(p);
+                double dist = player.euclDist(p) * Math.cos(Conversion.toRad((-player.fov/2)+i*player.visionStep)); // distance perpendiculaire (corrigée)
                 int x = i*(WIDTH/rays.size());
                 int height = (int)(((player.visionDistance - dist)/player.visionDistance)*WIDTH);
                 int y = (int) HEIGHT/2 - height/2;
