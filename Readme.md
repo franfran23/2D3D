@@ -13,5 +13,11 @@ Sinon:
 Si la configuration vscode fonctionne, F5 permet d'executer la classe principale (display.windowMain)  
 Main:  
 ```$ java -classpath classes/ display.windowMain```  
+ou ```$ ./run.sh``` (compile et execute)  
 Tests:  
 ```$ ./tests.sh```  
+
+
+## Controles  
+Pour se déplacer, on utilise ZQSD,  
+pour tourner à droite ou a gauche on utilise les flèches droite/gauche
