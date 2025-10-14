@@ -4,13 +4,23 @@ import java.util.ArrayList;
 
 public class Player extends Point {
     public int size = 20;
-    public int direction = 0; // degrees
+    public double direction = 0; // degrees
+    public double durectionStep = 0.8; // degrees
     public int visionDistance = 300;
-    public int visionStep = 1; // degrees
+    public double visionStep = 0.1; // degrees
     public int fov = 90; // degrees
 
     public Player(int x, int y) {
         super(x, y);
+    }
+
+    /** Make the player direction turn left */
+    public void turnLeft() {
+        this.direction -= this.durectionStep;
+    }
+    /** Make the player direction turn right */
+    public void turnRight() {
+        this.direction += this.durectionStep;
     }
 
     /** Generate a list of eye sights
@@ -18,7 +28,7 @@ public class Player extends Point {
      */
     public ArrayList<Line> genRays() {
         ArrayList<Line> eyesight = new ArrayList<>();
-        for (int i = -45; i<(int)this.fov/2; i+=this.visionStep) {
+        for (double i = -45; i<this.fov/2; i+=this.visionStep) {
             // la moitié des rayons à gauche l'autre moitié à droite
             eyesight.add(
                 new Line(

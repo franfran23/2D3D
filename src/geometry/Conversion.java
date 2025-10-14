@@ -10,7 +10,7 @@ public final class Conversion {
      * @param a angle in degrees
      * @return the radian convertion of this angle
      */
-    public static double toRad(int angle) {
+    public static double toRad(double angle) {
         return angle*Math.PI / 180;
     }
 }

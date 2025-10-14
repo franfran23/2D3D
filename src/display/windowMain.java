@@ -68,10 +68,10 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             this.player.x -= (int)speed*Math.cos(Conversion.toRad(this.player.direction + 90));
         }
         if (turnLeft) {
-            this.player.direction--;
+            this.player.turnLeft();
         }
         if (turnRight) {
-            this.player.direction++;
+            this.player.turnRight();
         }
     }
 
