@@ -1,12 +1,7 @@
-package test;
+package geometry;
 
-import geometry.Line;
-import geometry.Point;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LinesTest {
     

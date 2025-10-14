@@ -10,6 +10,7 @@ Sinon:
 ```$ javac -sourcepath src src/<package>/<classFile> -d classes```  
 
 ## Execution :  
+Si la configuration vscode fonctionne, F5 permet d'executer la classe principale (display.windowMain)  
 Main:  
 ```$ java -classpath classes/ display.windowMain```  
 Tests:  
