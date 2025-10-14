@@ -76,7 +76,8 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
                 int height = (int)(((player.visionDistance - dist)/player.visionDistance)*500);
                 System.out.println(String.valueOf((int)dist) + " " + String.valueOf(height));
                 int y = (int) 250 - height/2;
-                //g2d.setColor(Color.getHSBColor((float)240.0, (float)1.0, (float)(player.visionDistance/Math.sqrt(dist))));
+                //                              H (valeur quelconque)  S (saturation 0 = blanc)  B (luminosité dependante de la distance)
+                g2d.setColor(Color.getHSBColor( (float)1.0,            (float)0.0,               (float)((player.visionDistance - dist)/player.visionDistance)));
                 g2d.fillRect(x, y, 500/rays.size(), height);
                 
             }
