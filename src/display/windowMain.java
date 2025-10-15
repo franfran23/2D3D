@@ -2,8 +2,9 @@ package display;
 
 import javax.swing.*;
 
-import java.awt.Graphics; import java.awt.Graphics2D; import java.awt.Color;
+import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,8 +20,83 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
 
     static private int WIDTH = 1000;
     static private int HEIGHT = 1000;
+    static private int MOUSE_SPEED = 100; // over 1000
 
-    public windowMain() {
+    static private int MIN_MOUSE_STEP = 10;
+    static private int MOUSE_RANGE_BOUND = 20; // how many pixels can the mouse move before being reset to center position
+                                               // (this has no direct impact on direction, it just prevent flickering at small steps)
+
+    private int mouseX = 0;
+    private int mouseY = 0;
+    private int yOffset = 0;
+    private JFrame frame;
+    private Robot robot;
+    private java.awt.Point centerPoint;
+
+    public void setup() {
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if (window instanceof JFrame) {
+            frame = (JFrame) window;
+        } else {
+            System.err.println("Could not resolve window inheritence, frame unaccessible. Exiting");
+            System.exit(1);
+        }
+        java.awt.Point windowPos = window.getLocationOnScreen();
+        centerPoint = new java.awt.Point(frame.getWidth()/2, frame.getHeight()/2);
+
+        // invisible + locked mouse cursor
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Cursor invisibleCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new java.awt.Point(0, 0), "invisibleCursor");
+        frame.getContentPane().setCursor(invisibleCursor);
+
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        // mouse motion listener
+        addMouseMotionListener (new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int deltaX = e.getX() - centerPoint.x;
+                int deltaY = e.getY() - centerPoint.y;
+
+                // X
+                if (Math.abs(deltaX) > MIN_MOUSE_STEP) {
+                    player.direction += (deltaX - mouseX)*MOUSE_SPEED/1000;
+                    mouseX += deltaX;
+                    repaint();
+                }
+
+                // Y
+                if (Math.abs(deltaY) > MIN_MOUSE_STEP) {
+                    yOffset += (deltaY - mouseY);
+                    System.out.println("yOffset: " + yOffset);
+                    mouseY += deltaY;
+                    repaint();
+                }
+
+
+                // mouse position reset
+                if (Math.abs(mouseX) > MOUSE_RANGE_BOUND || Math.abs(mouseX) > MOUSE_RANGE_BOUND || Math.abs(yOffset) > 50) {
+                    robot.mouseMove(windowPos.x + centerPoint.x, windowPos.y + centerPoint.y);
+                    mouseX = 0;
+                    mouseY = 0;
+                }
+                
+            }
+        });
+
+        // exit listener
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "closeWindow");
+        getActionMap().put("closeWindow", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
         rects.add(new MyRectangle(50, 50, 100, 200));
         rects.add(new MyRectangle(200, 50, 50, 50));
 
@@ -67,12 +143,12 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             this.player.y -= (int)speed*Math.sin(Conversion.toRad(this.player.direction + 90));
             this.player.x -= (int)speed*Math.cos(Conversion.toRad(this.player.direction + 90));
         }
-        if (turnLeft) {
-            this.player.turnLeft();
-        }
-        if (turnRight) {
-            this.player.turnRight();
-        }
+        // if (turnLeft) {
+        //     this.player.turnLeft();
+        // }
+        // if (turnRight) {
+        //     this.player.turnRight();
+        // }
     }
 
     @Override
@@ -151,7 +227,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
 
         g2d.setColor(Color.ORANGE);
         for (Line l: rays) {
-            Point p = player.closestIntersection(l, rects);
+            geometry.Point p = player.closestIntersection(l, rects);
             if (p != null) g2d.drawOval(p.x-2, p.y-2, 4, 4);
         }
 
@@ -159,12 +235,12 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
         // 3D rendering
         for (int i = 0; i<rays.size();i++) {
             Line l = rays.get(i);
-            Point p = player.closestIntersection(l, rects);
+            geometry.Point p = player.closestIntersection(l, rects);
             if (p != null) {
                 double dist = player.euclDist(p) * Math.cos(Conversion.toRad((-player.fov/2)+i*player.visionStep)); // distance perpendiculaire (corrigée)
                 int x = i*(WIDTH/rays.size());
                 int height = (int)(((player.visionDistance - dist)/player.visionDistance)*WIDTH);
-                int y = (int) HEIGHT/2 - height/2;
+                int y = (int) HEIGHT/2 - height/2 + yOffset;
                 //                              H (valeur quelconque)  S (saturation 0 = blanc)  B (luminosité dependante de la distance)
                 g2d.setColor(Color.getHSBColor( (float)1.0,            (float)0.0,               (float)((player.visionDistance - dist)/player.visionDistance)));
                 g2d.fillRect(x, y, WIDTH/rays.size(), height);
@@ -183,6 +259,8 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        panel.setup();
 
         Thread loopThread = new Thread(panel);
         loopThread.start();

@@ -3,12 +3,12 @@ package geometry;
 import java.util.ArrayList;
 
 public class Player extends Point {
-    public static int size = 20;
-    public static double direction = 0; // degrees
-    public static double durectionStep = 0.8; // degrees
-    public static int visionDistance = 300;
-    public static double visionStep = .5; // degrees
-    public static int fov = 90; // degrees
+    public int size = 20;
+    public double direction = 0; // degrees
+    public double durectionStep = 0.8; // degrees
+    public int visionDistance = 300;
+    public double visionStep = .5; // degrees
+    public int fov = 90; // degrees
 
     public Player(int x, int y) {
         super(x, y);

@@ -1,7 +1,7 @@
 {
     "java.mainClass": "display.windowMain",
     "java.project.referencedLibraries": [
-        "/home/ne0/Documents/dev/java/graphics/junit-console.jar"
+        "junit-console.jar"
     ],
     "java.project.outputPath": "classes",
     "java.project.sourcePaths": [
