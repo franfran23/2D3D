@@ -9,6 +9,8 @@ public class Player extends Point {
     public int visionDistance = 300;
     public double visionStep = .5; // degrees
     public int fov = 90; // degrees
+    public int maxYView = 400; // how many vertical offset is alloed (in pixels)
+                               // simulates a vertical camera movement
 
     public Player(int x, int y) {
         super(x, y);

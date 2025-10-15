@@ -20,7 +20,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
 
     static private int WIDTH = 1000;
     static private int HEIGHT = 1000;
-    static private int MOUSE_SPEED = 100; // over 1000
+    static private int MOUSE_SPEED = 300; // over 1000
 
     static private int MIN_MOUSE_STEP = 10;
     static private int MOUSE_RANGE_BOUND = 20; // how many pixels can the mouse move before being reset to center position
@@ -60,7 +60,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             @Override
             public void mouseMoved(MouseEvent e) {
                 int deltaX = e.getX() - centerPoint.x;
-                int deltaY = e.getY() - centerPoint.y;
+                int deltaY = e.getY() - centerPoint.y + 37; // phantom drift ??
 
                 // X
                 if (Math.abs(deltaX) > MIN_MOUSE_STEP) {
@@ -70,16 +70,17 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
                 }
 
                 // Y
-                if (Math.abs(deltaY) > MIN_MOUSE_STEP) {
-                    yOffset += (deltaY - mouseY);
-                    System.out.println("yOffset: " + yOffset);
-                    mouseY += deltaY;
+                if (Math.abs(deltaY) > 5) {
+                    System.out.println("difference: " + deltaY + " yOffset: " + yOffset);
+                    if (Math.abs(yOffset - (deltaY - mouseY)) < player.maxYView)
+                        yOffset -= (deltaY - mouseY);
+                    mouseY += (deltaY-mouseY);
                     repaint();
                 }
 
 
                 // mouse position reset
-                if (Math.abs(mouseX) > MOUSE_RANGE_BOUND || Math.abs(mouseX) > MOUSE_RANGE_BOUND || Math.abs(yOffset) > 50) {
+                if (Math.abs(mouseX) > MOUSE_RANGE_BOUND || Math.abs(mouseY) > MOUSE_RANGE_BOUND) {
                     robot.mouseMove(windowPos.x + centerPoint.x, windowPos.y + centerPoint.y);
                     mouseX = 0;
                     mouseY = 0;
@@ -218,20 +219,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
 
         ArrayList<Line> rays = player.genRays();
 
-        // 2D rendering
-        g2d.setColor(Color.RED);
-        int playerMidSize = (int)this.player.size/2;
-        g2d.fillOval(this.player.x-playerMidSize, this.player.y-playerMidSize, this.player.size, this.player.size);
-        Line directionLine = this.player.genDirectionLine();
-        g2d.drawLine(directionLine.sX, directionLine.sY, directionLine.eX, directionLine.eY);
-
-        g2d.setColor(Color.ORANGE);
-        for (Line l: rays) {
-            geometry.Point p = player.closestIntersection(l, rects);
-            if (p != null) g2d.drawOval(p.x-2, p.y-2, 4, 4);
-        }
-
-
+    
         // 3D rendering
         for (int i = 0; i<rays.size();i++) {
             Line l = rays.get(i);
@@ -246,6 +234,20 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
                 g2d.fillRect(x, y, WIDTH/rays.size(), height);
                 
             }
+        }
+
+
+        // 2D rendering
+        g2d.setColor(Color.RED);
+        int playerMidSize = (int)this.player.size/2;
+        g2d.fillOval(this.player.x-playerMidSize, this.player.y-playerMidSize, this.player.size, this.player.size);
+        Line directionLine = this.player.genDirectionLine();
+        g2d.drawLine(directionLine.sX, directionLine.sY, directionLine.eX, directionLine.eY);
+
+        g2d.setColor(Color.ORANGE);
+        for (Line l: rays) {
+            geometry.Point p = player.closestIntersection(l, rects);
+            if (p != null) g2d.drawOval(p.x-2, p.y-2, 4, 4);
         }
 
     }
