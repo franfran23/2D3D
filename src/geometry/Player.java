@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class Player extends Point {
     public int size = 20;
     public double direction = 0; // degrees
-    public double durectionStep = 0.8; // degrees
+    public double directionStep = 0.8; // degrees
     public int visionDistance = 300;
-    public double visionStep = .5; // degrees
+    public double visionStep = 1; // degrees
     public int fov = 90; // degrees
     public int maxYView = 400; // how many vertical offset is alloed (in pixels)
                                // simulates a vertical camera movement
@@ -18,11 +18,11 @@ public class Player extends Point {
 
     /** Make the player direction turn left */
     public void turnLeft() {
-        this.direction -= this.durectionStep;
+        this.direction -= this.directionStep;
     }
     /** Make the player direction turn right */
     public void turnRight() {
-        this.direction += this.durectionStep;
+        this.direction += this.directionStep;
     }
 
     /** Generate a list of eye sights

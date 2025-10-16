@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,8 +17,10 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
     
     private ArrayList<MyRectangle> rects = new ArrayList<>();
     private Player player = new Player(100, 100);
-    private boolean up, down, left, right, turnLeft, turnRight;
+    private boolean up, down, left, right;
     private final AtomicBoolean running = new AtomicBoolean(true);
+
+    private Map<String, BufferedImage> images;
 
     static private int WIDTH = 1000;
     static private int HEIGHT = 1000;
@@ -71,7 +75,6 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
 
                 // Y
                 if (Math.abs(deltaY) > 5) {
-                    System.out.println("difference: " + deltaY + " yOffset: " + yOffset);
                     if (Math.abs(yOffset - (deltaY - mouseY)) < player.maxYView)
                         yOffset -= (deltaY - mouseY);
                     mouseY += (deltaY-mouseY);
@@ -101,6 +104,8 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
         rects.add(new MyRectangle(50, 50, 100, 200));
         rects.add(new MyRectangle(200, 50, 50, 50));
 
+        images = Images.loadImages();
+
         setBackground(Color.BLACK);
         setFocusable(true);
         requestFocusInWindow();
@@ -111,7 +116,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
     @Override
     public void run() {
         long lastTime = System.nanoTime();
-        double nsPerFrame = 1_000_000_000.0 / 165; // 165 FPS
+        double nsPerFrame = 1_000_000_000.0 / 60; // 60 FPS
 
         while (running.get()) {
             long now = System.nanoTime();
@@ -144,12 +149,6 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             this.player.y -= (int)speed*Math.sin(Conversion.toRad(this.player.direction + 90));
             this.player.x -= (int)speed*Math.cos(Conversion.toRad(this.player.direction + 90));
         }
-        // if (turnLeft) {
-        //     this.player.turnLeft();
-        // }
-        // if (turnRight) {
-        //     this.player.turnRight();
-        // }
     }
 
     @Override
@@ -167,12 +166,6 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             case KeyEvent.VK_D:
                 right = true;
                 break;
-            case KeyEvent.VK_LEFT:
-                turnLeft = true;
-                break;
-            case KeyEvent.VK_RIGHT:
-                turnRight = true;
-                break;
         }
     }
     @Override
@@ -189,12 +182,6 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
                 break;
             case KeyEvent.VK_D:
                 right = false;
-                break;
-            case KeyEvent.VK_LEFT:
-                turnLeft = false;
-                break;
-            case KeyEvent.VK_RIGHT:
-                turnRight = false;
                 break;
         }
     }
@@ -229,9 +216,24 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
                 int x = i*(WIDTH/rays.size());
                 int height = (int)(((player.visionDistance - dist)/player.visionDistance)*WIDTH);
                 int y = (int) HEIGHT/2 - height/2 + yOffset;
+                int width = WIDTH/rays.size();
+
+
+                // draw white standard rectangles
                 //                              H (valeur quelconque)  S (saturation 0 = blanc)  B (luminosité dependante de la distance)
                 g2d.setColor(Color.getHSBColor( (float)1.0,            (float)0.0,               (float)((player.visionDistance - dist)/player.visionDistance)));
-                g2d.fillRect(x, y, WIDTH/rays.size(), height);
+                g2d.fillRect(x, y, width, height);
+
+                // draw special textures
+                try {
+                    BufferedImage subImage = images.get("macron").getSubimage((int)(x*0.4), 0, (int)(width*0.4), (int)(height*0.4));
+                    RescaleOp op = new RescaleOp((float)((player.visionDistance - dist)/player.visionDistance), 0f, null);
+                    BufferedImage darkened = op.filter(subImage, null);
+                
+                    g2d.drawImage(darkened, x, y, width, height, null);
+                } catch (java.awt.image.RasterFormatException e) {
+                    // don't draw if subimage is out of the main image
+                }
                 
             }
         }
@@ -249,6 +251,12 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             geometry.Point p = player.closestIntersection(l, rects);
             if (p != null) g2d.drawOval(p.x-2, p.y-2, 4, 4);
         }
+
+
+        // for (String imageKey: images.keySet()) {
+        //     g2d.drawImage(images.get(imageKey),
+        //                 0, 0, null); // drawn at x=0 y=0
+        // }
 
     }
 
