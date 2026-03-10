@@ -57,4 +57,24 @@ public class Line {
                 this.eX == l.eX &&
                 this.eY == l.eY;
     }
+
+    /**
+     * Renvoie la distance perpendiculaire entre cette ligne et un point
+     * @param p un point sur le plan
+     * @return la distance perpendiculaire entre cette ligne et le point
+     */
+    public double perpDist(Point p)
+    {
+        // coords du point
+        int x0 = p.x; int y0 = p.y;
+        // coords de la ligne
+        int x1 = sX; int y1 = sY;
+        int x2 = eX; int y2 = eY;
+        
+        double num = Math.abs( (y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1 );
+        double den = Math.sqrt( (y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) );
+
+        return num/den;
+
+    }
 }

@@ -73,4 +73,16 @@ public class Player extends Point {
         }
         return closest;
     }
+
+    /**
+     * Renvoie une ligne (deux points) représentant un segment perpendiculaire à la direction du player
+     * @return un segment perpendiculaire à la direction pu player
+     */
+    public Line getNormale()
+    {
+                                        // *100 to be sure to get a non zero value
+        int x1 = x + (int)(Math.cos(Conversion.toRad(direction))*100);
+        int y1 = y + (int)(Math.sin(Conversion.toRad(direction))*100);
+        return new Line(x, y, x1, y1);
+    }
 }

@@ -64,7 +64,7 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             @Override
             public void mouseMoved(MouseEvent e) {
                 int deltaX = e.getX() - centerPoint.x;
-                int deltaY = e.getY() - centerPoint.y + 37; // phantom drift ??
+                int deltaY = e.getY() - centerPoint.y + 35; // phantom drift ??
 
                 // X
                 if (Math.abs(deltaX) > MIN_MOUSE_STEP) {
@@ -212,7 +212,12 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
             Line l = rays.get(i);
             geometry.Point p = player.closestIntersection(l, rects);
             if (p != null) {
-                double dist = player.euclDist(p) * Math.cos(Conversion.toRad((-player.fov/2)+i*player.visionStep)); // distance perpendiculaire (corrigée)
+                //double dist = player.euclDist(p) * Math.cos(Conversion.toRad((-player.fov/2)+i*player.visionStep)); // distance perpendiculaire (corrigée)
+                double dist = player.getNormale().perpDist(p);
+                if (i == rays.size()/4) // firt quartil
+                    System.out.println("Distance of first ray from the player: " + dist);
+                else if (i == rays.size()/2) // middle ray, the player vision
+                    System.out.println("Distance of middle ray from the player: " + dist);
                 int x = i*(WIDTH/rays.size());
                 int height = (int)(((player.visionDistance - dist)/player.visionDistance)*WIDTH);
                 int y = (int) HEIGHT/2 - height/2 + yOffset;
@@ -245,6 +250,11 @@ public class windowMain extends JPanel implements Runnable, KeyListener {
         g2d.fillOval(this.player.x-playerMidSize, this.player.y-playerMidSize, this.player.size, this.player.size);
         Line directionLine = this.player.genDirectionLine();
         g2d.drawLine(directionLine.sX, directionLine.sY, directionLine.eX, directionLine.eY);
+        Line firstQuartLine = rays.get(rays.size()/4);
+        g2d.drawLine(firstQuartLine.sX, firstQuartLine.sY, firstQuartLine.eX, firstQuartLine.eY);
+        Line thirtQuartLine = rays.get(rays.size()*3/4);
+        g2d.drawLine(thirtQuartLine.sX, thirtQuartLine.sY, thirtQuartLine.eX, thirtQuartLine.eY);
+
 
         g2d.setColor(Color.ORANGE);
         for (Line l: rays) {
